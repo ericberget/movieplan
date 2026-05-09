@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elsa's Movie · Production Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800;900&family=Bungee&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=League+Gothic&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #4FA8E5;
+    --sky-deep: #2B89C4;
+    --sky-soft: #7CC0EE;
+    --cream: #E8DCBE;
+    --cream-light: #FAF6EA;
+    --paper: #FFFFFF;
+    --yellow: #F4D952;
+    --yellow-deep: #E8C634;
+    --yellow-soft: #FBE899;
+    --crimson: #C8362E;
+    --crimson-deep: #8B1F1A;
+    --ink: #1B4F7C;
+    --ink-soft: #5A8AA8;
+    --ink-mute: #8FAEC4;
+    --green: #6BB85C;
+    --green-soft: #D8ECCF;
+    --green-ink: #2D6B22;
+    --red-soft: #F4D4D0;
+    --red-ink: #B33A2C;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Nunito', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--sky);
+    color: white;
+    padding: 32px 24px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+    z-index: 2;
+    text-align: center;
+  }
+  .brand-row {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: white;
+    opacity: 0.85;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  h1.title {
+    font-family: 'League Gothic', sans-serif;
+    font-weight: 400;
+    font-size: clamp(72px, 13vw, 124px);
+    line-height: 0.92;
+    margin: 0;
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--crimson), 6px 6px 0 var(--crimson-deep);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  .tagline {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 16px;
+    backdrop-filter: blur(4px);
+  }
+  .stats-row {
+    position: relative;
+    z-index: 3;
+    max-width: 480px;
+    margin: -24px auto 0;
+    padding: 8px 0;
+    background: var(--paper);
+    border-radius: 999px;
+    border: 1px solid rgba(27, 79, 124, 0.12);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .stat {
+    text-align: center;
+    padding: 2px 6px;
+    border-right: 1px solid rgba(27, 79, 124, 0.1);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .stat-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin: 24px 0 16px;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 0;
+  }
+  .tab {
+    background: transparent;
+    border: 3px solid var(--ink);
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 10px 20px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    cursor: pointer;
+    margin-bottom: -3px;
+    transition: all 0.2s;
+  }
+  .tab:hover { background: var(--yellow-soft); }
+  .tab.active {
+    background: var(--yellow);
+    color: var(--ink);
+    transform: translateY(2px);
+  }
+
+  /* FILTERS */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .pill {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .pill:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .pill:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+  .pill.active {
+    background: var(--ink);
+    color: var(--yellow);
+  }
+  .pill.todo-toggle { margin-left: auto; }
+  .pill.todo-toggle.active { background: var(--yellow); color: var(--ink); }
+
+  .cast-select {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 28px 6px 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%231B4F7C' d='M5 6L0 0h10z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    max-width: 220px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .cast-select:focus { outline: none; border-color: var(--crimson); }
+  .cast-select.is-active {
+    background-color: var(--crimson);
+    color: var(--cream);
+    border-color: var(--crimson-deep);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23F5EFE0' d='M5 6L0 0h10z'/></svg>");
+  }
+
+  .cast-banner {
+    background: var(--paper);
+    border: 2px solid var(--crimson);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: 3px 3px 0 var(--crimson-deep);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .cast-banner-greeting {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .cast-banner-name {
+    font-family: 'League Gothic', sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    display: block;
+    margin-top: 2px;
+  }
+  .cast-banner-info {
+    flex: 1;
+    font-size: 13px;
+    color: var(--ink-soft);
+    min-width: 160px;
+    line-height: 1.4;
+  }
+  .cast-banner-info strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .cast-banner-clear {
+    background: transparent;
+    border: 1px solid var(--ink-mute);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .cast-banner-clear:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* SCENE CARDS */
+  .scene-card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .scene-card.open {
+    box-shadow: 6px 6px 0 var(--yellow-deep);
+    border-color: var(--yellow-deep);
+  }
+  .scene-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .scene-num {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .scene-num.act-1 { background: var(--yellow); }
+  .scene-num.act-2 { background: var(--sky-soft); }
+  .scene-num.act-3 { background: #F4A6B8; }
+  .scene-info { flex: 1; min-width: 0; }
+  .scene-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .scene-chars {
+    font-size: 12px;
+    color: var(--ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .scene-status {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    border: 2px solid;
+  }
+  .scene-status.s-not_started {
+    background: var(--cream);
+    color: var(--ink-soft);
+    border-color: var(--ink-mute);
+  }
+  .scene-status.s-in_progress {
+    background: var(--yellow-soft);
+    color: #7A5C0F;
+    border-color: var(--yellow-deep);
+  }
+  .scene-status.s-done {
+    background: var(--green-soft);
+    color: var(--green-ink);
+    border-color: var(--green);
+  }
+  .scene-chevron {
+    color: var(--ink-soft);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .scene-card.open .scene-chevron { transform: rotate(180deg); }
+  @media (max-width: 540px) {
+    .scene-status { display: none; }
+    .scene-card.open .scene-status { display: inline-block; }
+  }
+
+  /* DETAIL */
+  .scene-detail {
+    border-top: 2px dashed var(--ink-mute);
+    padding: 18px 16px;
+    background: var(--cream-light);
+  }
+  .field {
+    margin-bottom: 14px;
+  }
+  .field-lbl {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .field-val {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .field-val.notes {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--sky-deep);
+    line-height: 1.3;
+  }
+
+  .script-block {
+    background: white;
+    border: 2px solid var(--ink-mute);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+  .script-block strong {
+    font-family: 'League Gothic', sans-serif;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    color: var(--crimson);
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-right: 4px;
+  }
+  .script-block em {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+  .script-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .script-edited {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--crimson);
+    margin-right: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .script-btn {
+    background: transparent;
+    border: 1px solid var(--ink-mute);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .script-btn:hover { border-color: var(--ink); background: var(--cream); }
+  .script-btn--reset { color: var(--ink-soft); }
+  .script-btn--save {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+  .script-btn--save:hover {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: var(--cream);
+  }
+  .script-block--editing { padding: 14px 16px; }
+  .script-textarea {
+    width: 100%;
+    min-height: 320px;
+    padding: 14px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    background: white;
+    border: 1px solid var(--ink-mute);
+    border-radius: 8px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .script-textarea:focus { outline: none; border-color: var(--ink); }
+  .script-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .script-help {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-right: auto;
+  }
+
+  .prod-panel {
+    margin-top: 22px;
+    padding: 8px 22px 22px;
+    background: var(--ink);
+    border-radius: 14px;
+    color: var(--cream);
+  }
+  .prod-panel .section-divider {
+    border-top-color: rgba(232, 220, 190, 0.2);
+    color: rgba(232, 220, 190, 0.85);
+    margin-top: 22px;
+  }
+  .prod-panel .section-divider::before {
+    color: var(--yellow);
+  }
+  .prod-panel .status-buttons {
+    margin-top: 18px;
+  }
+  .prod-panel .status-btn {
+    background: transparent;
+    border-color: rgba(232, 220, 190, 0.3);
+    color: var(--cream);
+  }
+  .prod-panel .status-btn:hover {
+    background: rgba(232, 220, 190, 0.08);
+    border-color: rgba(232, 220, 190, 0.5);
+  }
+  .prod-panel .status-btn.active.b-not_started {
+    background: rgba(232, 220, 190, 0.15);
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+  .prod-panel .status-btn.active.b-in_progress {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: var(--ink);
+  }
+  .prod-panel .status-btn.active.b-done {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .prod-panel .check {
+    background: transparent;
+    border-color: rgba(232, 220, 190, 0.25);
+    color: var(--cream);
+  }
+  .prod-panel .check:hover {
+    border-color: rgba(232, 220, 190, 0.55);
+  }
+  .prod-panel .check-box {
+    background: transparent;
+    border-color: rgba(232, 220, 190, 0.5);
+  }
+  .prod-panel .check.checked {
+    background: rgba(107, 184, 92, 0.18);
+    border-color: var(--green);
+    color: var(--cream);
+  }
+  .prod-panel .check.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .prod-panel .takes-row {
+    background: transparent;
+    border-color: rgba(232, 220, 190, 0.25);
+  }
+  .prod-panel .takes-lbl,
+  .prod-panel .takes-num {
+    color: var(--cream);
+  }
+  .prod-panel .prod-notes {
+    background: var(--paper);
+    border-color: rgba(232, 220, 190, 0.4);
+    color: var(--ink);
+  }
+  .prod-panel .prod-notes::placeholder {
+    color: var(--ink-mute);
+  }
+
+  .section-divider {
+    margin: 18px 0 12px;
+    padding-top: 10px;
+    border-top: 4px double var(--ink);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .section-divider::before {
+    content: '✻';
+    margin-right: 8px;
+    color: var(--crimson);
+    font-size: 14px;
+  }
+
+  .status-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .status-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: var(--paper);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .status-btn:hover { background: var(--cream); }
+  .status-btn.active.b-not_started {
+    background: var(--cream);
+    color: var(--ink);
+  }
+  .status-btn.active.b-in_progress {
+    background: var(--yellow);
+    color: var(--ink);
+  }
+  .status-btn.active.b-done {
+    background: var(--green);
+    color: white;
+    border-color: var(--green-ink);
+  }
+
+  .checks {
+    display: grid;
+    gap: 6px;
+  }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--paper);
+    border: 2px solid var(--ink-mute);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .check:hover { border-color: var(--ink); }
+  .check input { display: none; }
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--ink);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: white;
+    transition: all 0.15s;
+  }
+  .check.checked {
+    background: var(--green-soft);
+    border-color: var(--green);
+    color: var(--green-ink);
+  }
+  .check.checked .check-box {
+    background: var(--green);
+    border-color: var(--green-ink);
+  }
+  .check.checked .check-box::after {
+    content: '✓';
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .takes-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-top: 10px;
+  }
+  .takes-lbl {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    flex: 1;
+  }
+  .takes-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--yellow);
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: transform 0.1s;
+  }
+  .takes-btn:active { transform: scale(0.92); }
+  .takes-num {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+    min-width: 30px;
+    text-align: center;
+  }
+
+  .prod-notes {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: var(--paper);
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 70px;
+  }
+  .prod-notes::placeholder {
+    color: var(--ink-mute);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  /* COSTUMES */
+  .character-card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    margin-bottom: 18px;
+    box-shadow: 4px 4px 0 var(--ink);
+    overflow: hidden;
+  }
+  .character-thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--cream-light);
+    border-bottom: 2px solid var(--ink);
+    overflow: hidden;
+  }
+  .character-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .character-thumb-empty {
+    position: absolute;
+    inset: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: 2px dashed var(--ink-mute);
+    border-radius: 12px;
+    transition: all 0.15s;
+    background: rgba(255,255,255,0.4);
+  }
+  .character-thumb-empty:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: rgba(255,255,255,0.7);
+  }
+  .character-thumb-icon {
+    font-size: 36px;
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+  .character-thumb-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .character-thumb-wrap:hover .character-thumb-actions {
+    opacity: 1;
+  }
+  .character-thumb-btn {
+    background: rgba(255,255,255,0.95);
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .character-thumb-btn:hover { background: white; }
+  .character-thumb-btn.danger { color: var(--crimson); }
+  .character-body { padding: 18px 20px 20px; }
+  .character-name {
+    font-family: 'League Gothic', sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    margin: 0 0 4px;
+  }
+  .character-actor {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--sky-deep);
+    margin-bottom: 12px;
+  }
+  .character-section { margin-top: 16px; }
+  .character-section-lbl {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .character-desc {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: transparent;
+    border: 1px dashed var(--ink-mute);
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 70px;
+    box-sizing: border-box;
+  }
+  .character-desc:focus {
+    outline: none;
+    border-style: solid;
+    border-color: var(--ink);
+    background: var(--cream-light);
+  }
+  .character-desc::placeholder {
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .character-costume-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .character-costume-list li {
+    padding: 7px 0 7px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    position: relative;
+    line-height: 1.45;
+    border-bottom: 1px solid var(--cream-light);
+  }
+  .character-costume-list li:last-child { border-bottom: none; }
+  .character-costume-list li::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 14px;
+    width: 6px;
+    height: 6px;
+    background: var(--yellow);
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--ink-mute); border-radius: 999px; border: 2px solid var(--cream); }
+
+  /* PRINT */
+  @media print {
+    .hero::after, .tabs, .filter-row, .scene-chevron, .takes-row, .status-buttons { display: none; }
+    .scene-card { break-inside: avoid; box-shadow: none; }
+    .scene-detail { display: block !important; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  .pop { animation: pop 0.3s ease; }
+</style>
+</head>
+<body>
+<input type="file" id="char-img-input" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none">
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand-row">Elsa Studios &nbsp;·&nbsp; Presents</div>
+    <h1 class="title">Elsa's Movie</h1>
+    <div class="tagline">✻&nbsp;&nbsp;Twins · Spies · Lockets&nbsp;&nbsp;✻</div>
+  </div>
+</header>
+
+<div class="stats-row" id="stats"></div>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" data-view="scenes">Scenes</button>
+    <button class="tab" data-view="characters">Characters</button>
+  </div>
+
+  <div class="filter-row" id="filter-row">
+    <button class="pill active" data-act="all">All acts</button>
+    <button class="pill" data-act="1">Act I</button>
+    <button class="pill" data-act="2">Act II</button>
+    <button class="pill" data-act="3">Act III</button>
+    <select id="cast-filter" class="cast-select"><option value="">Cast · all</option></select>
+    <button class="pill todo-toggle" id="todo-toggle">To shoot only</button>
+  </div>
+
+  <div id="list"></div>
+</main>
+
+<script>
+const SCENES = [
+  {id:'p',n:'Pro',t:'The two spies',a:1,c:'Narrator + silhouettes (Chris, Lily)',w:"Narrator tells the story of two young spies who didn't get along, fell in love, married, and had twin girls — then never returned from one urgent mission. The girls were separated and given lockets with their parents' wedding rings inside.",p:'Lockets with wedding rings, possible silhouette setup',s:'Silhouette stage / abstract',notes:''},
+  {id:'s1',n:'1',t:"Introducing Lucy's World",a:1,c:'Lucy, Grandma Greta',w:"Lucy at the bakery, bored, fingering her locket and wondering how to open it. Greta comes out and offers to take her to the library.",p:'Locket, bakery closed sign',s:"Porch of Greta's bakery (Colorado)",notes:'Introduce Locket'},
+  {id:'s2',n:'2',t:"Introducing Luna's World",a:1,c:'Luna, Mark',w:"Luna in a tree, bored, talking to herself about the mystery of her locket. Mark calls her down — they're getting takeout for dinner.",p:'Locket',s:'Wood cabin surrounded by trees (Wisconsin)',notes:'Introduce Locket'},
+  {id:'s3a',n:'3a',t:'James comes to Lucy',a:1,c:'Greta, Lucy, James',w:"James from SGGS arrives at Greta's door. Greta resists at first; James insists it's time. They argue about whether Lucy is ready. Greta finally relents.",p:'Teapot, teacups',s:"Greta and Lucy's living room / kitchen",notes:'Split screen with 3b'},
+  {id:'s3b',n:'3b',t:'Cindy comes to Luna',a:1,c:'Cindy, Luna, Mark',w:"Cindy arrives at Mark's; Mark is late. Cindy walks in like she owns it. They sit Luna down to tell her about her past.",p:'Spy bracelet for Cindy',s:"Mark and Luna's living room",notes:'Split screen with 3a'},
+  {id:'s3c',n:'3c',t:'Girls react to news',a:1,c:'James, Greta, Lucy / Mark, Cindy, Luna',w:'"Your parents were spies. You have a twin sister." Cue both girls reacting at the same time. Cindy and James explain the SGGS.',p:'(none)',s:'Same as 3a/3b',notes:'They speak at the same time'},
+  {id:'s3d',n:'3d',t:'All get on jets',a:1,c:'James, Greta, Lucy / Mark, Cindy, Luna',w:'Both groups board their jets to fly to SGGS headquarters in Los Angeles.',p:'2 jets',s:'The sky',notes:'Split screen'},
+  {id:'s4',n:'4',t:'Introduce the villains',a:2,c:'Ludwig, Falcon, Macy',w:"Three villains discuss their plan — they need the amulet to power the crystal. Ludwig says he's almost done. Tension between them.",p:'Small wood table, red light',s:'Small dark room with red light',notes:'"Who are these guys?!" scene'},
+  {id:'s5a',n:'5a',t:'Luna arrives at SGGS HQ',a:2,c:'Luna, Cindy, Greta',w:"Luna's jet lands in an alley. Cindy uses a brick keypad to open a wall. Inside, Luna sees herself across the hallway.",p:'(none)',s:'Different shades of blue big hallway',notes:'"Hey! She\'s got a locket just like mine!"'},
+  {id:'s5b',n:'5b',t:'Lucy arrives at SGGS HQ',a:2,c:'Lucy, James, Mark',w:'Lucy enters the same way and sees Luna across the hallway.',p:'Floating transparent light blue keyboard',s:'Brick wall, big blue hallway',notes:'Same locket realization'},
+  {id:'s6',n:'6',t:'Twins are introduced',a:2,c:'Lucy, Luna, James, Cindy, Greta, Mark, Mr. Davodil',w:'James and Cindy formally introduce the twins. Mr. Davodil arrives and wants them to head to the meeting room right away.',p:'Gold watch on Mr. Davodil',s:'Glass elevator with blue carpet',notes:''},
+  {id:'s7',n:'7',t:'Explanation of the problem',a:2,c:'Lucy, Luna, James, Cindy, Greta, Mark, Mr. Davodil',w:"Mr. Davodil explains the SGGS, the rival SBGS, the powerful crystal, and the amulet they have. Cindy uses a remote and a screen drops down to show villain profiles.",p:'Big TV remote, drop-down screen, teacup/teapot, biscuits',s:'Rectangular small room, blue tones',notes:'Need to write why L&L are necessary, and when they accept the mission'},
+  {id:'s8',n:'8',t:'Meeting Josie',a:2,c:'Lucy, Luna, James, Cindy, Josie',w:"Cindy and James lead the twins through halls to the Fashion Room. Josie greets them, recognizes them as their parents' children. She's busy and shoos them out.",p:'Measuring tape, clothes hangers, hanger racks',s:'Big fashion room with clothes everywhere',notes:''},
+  {id:'s9',n:'9',t:'Lucy and Luna at night',a:2,c:'Lucy, Luna',w:"Bedtime. At 3am, Luna wakes Lucy up — she's hungry. They sneak through HQ, dodge guards, raid the freezer for ice cream sandwiches, sneak back, and talk about their lives.",p:'Plant to hide behind, fridge with 2 ice cream sandwiches',s:"Twins' bedroom + kitchen freezer",notes:''},
+  {id:'s10',n:'10',t:'Who stole the ice cream sandwiches?',a:2,c:'Lucy, Luna, James, Cindy',w:'Next day. Cindy notices ice cream sandwiches missing, blames Jonah. The twins exchange guilty looks, trying not to laugh.',p:'Empty ice cream sandwich box, fridge',s:'Same kitchen as scene 9',notes:"Need to write why they're in the kitchen together"},
+  {id:'s11',n:'11',t:'Fight Practice',a:2,c:'Lucy, Luna, James, Cindy',w:"James and Cindy wake the twins for fight practice. In the gym, Cindy hits a button and obstacles appear. Time-lapse over multiple days. Final test: Luna must sneak past James — three attempts, succeeds with grappling hook + smoke bomb.",p:'Gym props, fake guys, turbo blaster, grappling hook, smoke bomb, levitation gadget, combat boots',s:'Gym with bouncy half + hard floor half, tall ceiling',notes:''},
+  {id:'s12',n:'12',t:'Birthday Party',a:2,c:'Lucy, Luna, James, Cindy, Greta, Mark, Mr. Davodil',w:"Cindy reveals their real birthday is September 10. Greta and Mark explain the SGGS hid it for safety. Birthday cake, gifts: gadget bracelets, jet keys, custom boots, combat boots, Josie's special sunglasses. Then alarms go off.",p:'Birthday cake (#13 candles), gifts, bracelets, keys, boots, sunglasses',s:"Twins' room + dining hall with cake and presents",notes:'Scene ends with intruder alarms'},
+  {id:'s13',n:'13',t:'Amulet Steal Attempt #1',a:2,c:'Lucy, Luna, Cindy, James + good guys / Martin + bad guys',w:'Cindy and James take the twins to the tracking room where the amulet is kept. They go down to fight. Cindy drops a grappling hook; Luna picks it up. Luna swings across, kicks a guy off Cindy ("Eat shoes, you big baboon!"), races Martin to the amulet, secures it. Bad guys retreat. Amulet relocated to Lucy\'s room.',p:'Grappling hook, amulet glass case',s:'Giant room with criss-cross ceiling beams and staircase',notes:''},
+  {id:'s14',n:'14',t:'Fashion montage',a:2,c:'Josie, Lucy, Luna',w:'Montage of Josie measuring and testing outfits on the twins.',p:'Outfits galore',s:'Small room with a small runway',notes:'Move this scene'},
+  {id:'s15',n:'15',t:'New Maid meets Ludwig',a:2,c:'Aurora, Ludwig, Martin',w:'Ludwig admiring himself on top of his cylinder. Aurora (new maid) startles him. He sends her for iced coffee. Martin enters, asks to try stealing the amulet again — Ludwig says no.',p:'(none required)',s:'Mirror room with central pedestal cylinder',notes:''},
+  {id:'s16',n:'16',t:'SBGS makes a new plan',a:2,c:'Macy, Martin, Ludwig, Falcon',w:"The four villains argue. Macy proposes sending only Martin, since he was closest last time. Falcon suggests a tracker. Ludwig agrees to build it.",p:'(none)',s:'Same dark table room (no red light)',notes:''},
+  {id:'s17',n:'17',t:'Amulet attempt 2',a:2,c:'Lucy, Luna, Cindy, Martin',w:"Lucy alone with the amulet, thinking about her parents. Martin crashes through her window. She fights him off using boot spike and jail ball. Cindy and Luna burst in. Martin grabs the amulet anyway, escapes through window in a jet. Cindy chases in another jet.",p:'Amulet, jail ball, expanding rope, special boots',s:"Lucy and Luna's room with breakable plane window",notes:'Why is amulet with Lucy? Plan was to move it to a remote island'},
+  {id:'s18',n:'18',t:'SGGS prepares to attack',a:3,c:'Cindy, James, Lucy, Luna, Mr. Davodil',w:'In the jet with Mr. Davodil — discussing the plan and demonstrating the gadgets that transform jet → motorcycle → handheld.',p:'Tiny oval gadgets',s:'Inside the jet, then dry brown ground with scattered dead bushes',notes:''},
+  {id:'s18a',n:'18a',t:'Move toward SBGS HQ',a:3,c:'Cindy, James, Lucy, Luna',w:'Gadgets transform into individual jets, then motorcycles, then back. They reach an old building.',p:'Tiny oval gadget',s:'Same dry land',notes:''},
+  {id:'s19',n:'19',t:'Secret entrance into SBGS HQ',a:3,c:'Cindy, James, Lucy, Luna',w:"They enter an old newspaper printing building. James falls through floor (he's fine). Lucy notices a recently stacked pile of newspapers. They find the secret entrance underneath.",p:'Stack of newspapers, secret floor entrance',s:'Old run-down newspaper studio, then tunnel',notes:''},
+  {id:'s20',n:'20',t:'Ludwig sees the intruders',a:3,c:'Ludwig',w:'Tiny wall camera shows Ludwig the four intruders. He alerts the bad guys to find them.',p:'Tiny wall camera, headsets',s:'Walls with blue electricity going through them',notes:''},
+  {id:'s21',n:'21',t:'James gets caught',a:3,c:'Luna (James, bad guy, Cindy, Lucy voices only)',w:"Walls separate the four. Camera on Luna; she hears James fighting and getting captured through her earpiece.",p:'Headsets',s:'Same separated tunnel walls',notes:''},
+  {id:'s22',n:'22',t:'Luna fight / gets caught',a:3,c:'Luna, Macy, other bad guys',w:'Macy confronts Luna. Sword fight. Luna pins Macy and gloats. Macy reverses, pins her. "Only a real fighter would know that you never gloat until the battle is over." Bad guys take Luna away.',p:'Glowing sword',s:'Same tunnel area',notes:''},
+  {id:'s23',n:'23',t:'Lucy blends in',a:3,c:'Lucy, Aurora, Ludwig',w:'Lucy hides in a vent, drops into a different corridor, finds maid uniforms, puts one on with sunglasses. Bumps into Aurora, who assumes Lucy is also new.',p:'Maid outfit, name tag, sunglasses',s:'Corridor with maid uniform closet door',notes:''},
+  {id:'s24',n:'24',t:'Cookie scene',a:3,c:'Lucy',w:'Lucy makes super-fast cookies decorated with "Ha! I win!"',p:'Cookie ingredients, fridge, countertop',s:'Small kitchen inside the wall',notes:''},
+  {id:'s25',n:'25',t:"Everyone's trapped",a:3,c:'Luna, James, Cindy, Ludwig (background), bad guys',w:"Shows where Luna, James, and Cindy are trapped. James is chained in the cell. Cindy is in a separate guarded room. Luna and James talk.",p:'Cell bars, chains, ropes',s:'Cell room + small guard room',notes:''},
+  {id:'s26',n:'26',t:'Brings in cookies',a:3,c:'Lucy, Aurora, Ludwig',w:'Lucy brings Ludwig the "Ha I win" cookies. Ludwig loves the design. Tells Lucy to take the rest to the small room (where Cindy is).',p:'Cookie plate',s:'Big control panel room (mirrors, cylinder, crystal)',notes:''},
+  {id:'s27',n:'27',t:'Escape / split screen',a:3,c:'Lucy, Luna, James, Cindy, Ludwig (bg), bad guys',w:"Luna realizes the new maid is Lucy. Bets James $50. Lucy delivers cookies; the four guards fight over three cookies; Lucy frees Cindy. Luna uses her boot's metal cutter to free herself and James.",p:'Cookies, ropes, combat boots',s:'Multiple rooms / split screen',notes:''},
+  {id:'s28',n:'28',t:'Big fight scene',a:3,c:'Lucy, Luna, James, Cindy, Ludwig, all bad guys',w:"Big fight in the control room. SGGS wins. Ludwig has slipped away — he's on top of his machine.",p:'(combat-ready set)',s:'Control panel room',notes:''},
+  {id:'s29',n:'29',t:"Ludwig's machine",a:3,c:'Ludwig, Lucy, Luna, James, Cindy',w:"30 seconds left. Moon aligns. Ludwig fires the machine — nothing happens. The twins' lockets click open: inside are two rings each with a pinkish diamond — the missing piece of the crystal. The crystal vibrates, glows, a shard breaks free, then explodes.",p:'Lockets, rings with pink diamonds, crystal, glass case',s:'Big control room with cylinder',notes:'Need more info about why the crystal explodes'},
+  {id:'s30',n:'30',t:'SGGS escapes explosion',a:3,c:'Lucy, Luna, James, Cindy',w:'Run from the explosion — dodging, ducking, jumping a big gap. Reach the entrance. Push wrist buttons; a jet appears; fly off and land on a mountain cliff.',p:'Wrist gadget, summoned jet',s:'Tunnel + mountain cliff',notes:''},
+  {id:'s31',n:'31',t:'The proposal',a:3,c:'Lucy, Luna, James, Cindy',w:'On the cliff, James proposes to Cindy. She says yes. As they kiss, the SBGS HQ explodes in the distance during sunrise. Luna gags, Lucy "awws."',p:'Ring box, ring',s:'Mountain cliff at sunrise',notes:''},
+  {id:'s32a',n:'32a',t:'Epilogue: wedding',a:3,c:'Lucy, Luna, James, Cindy',w:"Cindy and James's wedding reception. Lucy and Luna reflect on the mission and ask what's next. Cindy and James adopt them.",p:'Wedding setup',s:'Wedding reception',notes:''},
+  {id:'s32b',n:'32b',t:'Epilogue: villains escape',a:3,c:'Ludwig, Macy',w:'Ludwig and Macy being brought to jail. Macy kicks the guard, presses a button on her necklace — jet packs appear. They escape. "I told you we should\'ve done my plan."',p:'Necklace button, jet packs',s:'Jail transfer',notes:"Who's bringing them? What about Martin?"},
+  {id:'s32c',n:'32c',t:'Epilogue: where to live',a:3,c:'Lucy, Luna, James, Cindy',w:'In a red car. "So where will we live?" Cindy: "The Davodil mansion — huge red and white with some gold."',p:'Red car',s:'Inside car / driving',notes:''}
+];
+
+const SCRIPT = {
+  p: `**Narrator:** Once there were two young spies. At first, they did NOT get along and were always trying to beat each other in everything. But then eventually, as they got older, they started to have feelings for each other. And over time, they got married… and had twins. Two baby girls. But when the girls were two years old, the two spies were sent on an urgent mission. They had been trying to avoid most missions while they raised their kids. But this was a big one. It was too important. So they kissed their baby girls goodbye and set off. But sadly, they never returned. To keep the girls safe from those who would do them harm, the girls were separated. One went to a lifelong friend and the other to a grandmother. And this is their story.
+
+*On screen: Ten years later…*`,
+
+  s1: `*Setting: porch of Greta's bakery.*
+
+*(Lucy sitting on the patio, sighs.)*
+**Lucy:** Ugh, it's so boring here. I've got nothing to do. *(taps bakery closed sign)* I wish the bakery was open, at least then I'd have something to do.
+
+*(looks down at neck, fingers locket)*
+**Lucy (voiceover):** What a pretty locket. I know it belonged to my parents, which makes it very special to me. But I wish I knew how to open it.
+
+*(Greta walks out the door to the patio.)*
+**Lucy:** Hi Grandma!
+**Grandma Greta:** Hi kiddo! Want to go to the library?
+**Lucy:** Sure. *(thought: even though I've already checked out every single book in the Realmvery library)*
+
+*(Lucy and Grandma walk toward library.)*`,
+
+  s2: `*Setting: Sitting in a tree.*
+
+**Luna:** *(talking to self / annoyed)* "Why don't you go on a walk?" … yeah, sure, it's not like I haven't walked around these woods a million times already. *(sighs)* The only fun thing around here is the mystery of this locket. *(holding locket, looking at back magnet)* I don't know how to open you… I wish I knew where your other half was.
+
+**Mark:** *(walks up)* Hey Luna!
+**Luna:** Hey Mark.
+**Mark:** It's time for dinner, kid.
+**Luna:** *(jumps down)* Please tell me you didn't make your horrid broccoli soup again.
+**Mark:** Nope! I'm not making dinner at all! We're getting takeout!
+**Luna:** Let's go! *(dances around excitedly!)*
+
+*(walk toward car together)*`,
+
+  s3a: `*Setting: Grandma Greta's living room with kitchen.*
+
+**James:** *(knocks on front door)*
+**Grandma Greta:** *(opens door)* Hel… *(slams door shut)*
+**James:** *(opens door, rolls eyes, hands on hips)* Well, that's no way to treat a guest.
+**Greta:** You are no guest. You should not be here right now!
+**James:** I was sent by the Super Good Guys Squad.
+**Greta:** I don't care who sent you. It is not the right time for you to be here!
+**James:** You were literally the one when they were little saying that they should live together. And now you're saying it's not the right time?! I mean it's been a long time since you've been a spy, so you probably wouldn't know anything about time.
+**Greta:** *(scoffs)* Oh be quiet. It was only a few years ago since I was a part of the SGGS, and I am not that old!
+**James:** It's been 15 years since you've been back at headquarters… don't you miss it?
+
+*(Grandma Greta flashback. Greta as the mother of Lucy and Luna's mom. Show Chris and Lily as teenagers fighting silently — Greta breaks it up. Echoed voices: "You two need to stop fighting. You're teammates not enemies." Greta fighting bad guys. Greta with other spies including younger Mark. Same teenagers falling in love / laughing on patio. Mark and Greta watching through window: "young love is such a great thing." They laugh.)*
+
+**Greta:** Alright, come on in.
+**James:** *(steps in)* It's time.
+**Greta:** *(yells up stairs)* Lucy, wake up!`,
+
+  s3b: `*Setting: Mark's house.*
+
+**Cindy:** *(knocks on door)*
+**Luna:** *(opens door)*
+**Cindy:** *(surprised, taken aback by Luna)* Hi, I'm Cindy. Is Mark here?
+**Luna:** No, he's at work.
+**Cindy:** Ugh! Mark! You're terrible with dates!
+
+*(Car screeches into the driveway, and Mark comes bursting out of it, panting heavily.)*
+
+**Mark:** *(panting)* So… sorry… I… forgot.
+**Cindy:** *(walks into house like she owns it)*
+**Luna:** *(whispers to Mark as he walks in)* Who is that? And why do you know her?
+**Mark:** *(smirks)* Work friend.
+**Luna:** *(follows into house)*`,
+
+  s3c: `*SPLIT SCREEN: spotlight on Cindy and James in living room / darkened background.*
+
+**Cindy and James (at the same time):** Okay look. This is going to be kind of hard to tell you. But no interruptions until I'm finished, okay?
+**L & L:** Okay.
+**Cindy and James:** So how well do you know your parents?
+**L & L:** Not too much. All I know is that they died in a car crash.
+**Cindy and James:** And what job did they have?
+**L & L:** They were archeologists.
+**Cindy and James:** Well, that's a lie.
+**Luna:** Which part is a lie? You said two things.
+**Cindy:** Number one. All of it. Number two. No interruptions.
+**Cindy and James:** Your parents were actually spies.
+**Luna:** What?! *(Excited! throws hands down)*
+**Lucy:** What? *(uncertain)*
+**Cindy and James:** They were some of the best… and they technically didn't actually die. They may have, but nobody really knows. One time, they went on a mission a little bit after they had you. They had to even though they didn't want to leave you. But they never returned. And that's not even the most crazy part. You have a twin sister.
+**L & L:** *(eyes light up)* Oh!
+**Cindy and James:** So, if you want to, we're going to the SGGS.
+**L & L:** What's that?
+**Cindy and James:** It's the Super Good Guys Squad — the spy agency your parents worked at.
+**Luna:** Are we going there in that jet that's parked outside?
+**Cindy:** How did you see that? That jet is in super camouflage mode.
+**Luna:** Well, I watched you park it from the window.
+**Cindy:** Oh! Well… you're right, we're going to ride it to Los Angeles, California.
+
+*(Cindy walks out the door; Luna follows excitedly.)*`,
+
+  s3d: `*Action sequence — both groups board their jets and take off, split screen, flying toward Los Angeles.*`,
+
+  s4: `*Setting: darkness except for a red light. Three new villains.*
+
+**Ludwig:** *(doesn't have an amulet yet)* I can't put the crystal in the power generator yet. There's a few more things I need to do.
+**Macy:** Well wouldya hurry up? This is taking way too long. If we're gonna do it before the good guys come and ruin all the fun, we have to do it very, very soon.
+**Falcon:** She's right, Ludwig. You need to hurry up. This plan is only going to work if we do this very, very soon.
+**Ludwig:** I'm almost done. You people don't understand the power of this crystal. It will be done "very, very soon." So just keep calm and I'll keep working day and night. Goodbye now.`,
+
+  s5a: `*Action: Luna's jet lands in an alley in Los Angeles. They stand in front of a steel, metal, impenetrable wall. Cindy puts her high heel on a specific brick — a keyboard appears, and she types in a code. The wall automatically opens up.*
+
+*Cindy and Luna walk in with a random SGGS agent. Immediately as she walks in, Luna sees dark blue floors, light blue walls, royal blue on the ceiling — all shades of blue. But when she looks across the hallway… she sees herself.*`,
+
+  s5b: `*Lucy enters the SGGS the same way (possibly through a brick wall). As Lucy looks across the hallway, she sees herself… but with different hair, looking back at her. First she blinks a few times, but then she remembers James's earlier visit:*
+
+*(flashback)* **James:** "You've had a twin all this time."
+**Lucy:** "This must be my twin!"
+
+*Lucy was not prepared for what was going to happen next.*`,
+
+  s6: `*As Lucy and Luna look at each other, they walk over, blink several times, and don't say a word. But they don't have to.*
+
+**Lucy / Luna (thoughts):** Hey! She's got a locket just like mine! *(locket glints)*
+
+**James:** Luna, this is your twin Lucy. And Lucy, this is your twin Luna.
+**Cindy (to Lucy):** I'm Cindy Von Davodil. We haven't met yet. But I am James' girlfriend and spy partner.
+**James (to Luna):** I am James, Cindy's partner. You'll be seeing a lot more of me. The boss should be here any min —
+
+*(A door opens. Mr. Davodil, head of SGGS, enters.)*
+
+**Mr. Davodil:** *(talking to 2 staff)* Oh, they're here. Perfect timing. Right on schedule! I am Mr. Davodil, head of the SGG —
+**Luna:** But hey, she's Cindy VON Davodil, so that means…
+**Mr. Davodil:** Yes, I'm Cindy's father, head of the SGGS.
+**Luna:** What does that stand for?
+**Mr. Davodil:** Super Good Guys Squad! … Now, since you're both here, let's step right into the meeting room. We have a lot to discuss.`,
+
+  s7: `*Setting: They walk into a glass elevator and ride up what feels like 100 floors, arriving in a big room with a long table. Mr. Davodil sits at the head.*
+
+**Mr. Davodil:** Now that you're finally here, you're probably confused about where you are and what you're doing here.
+**L & L:** *(both nod)*
+**Luna:** Um, duh!
+**Mr. Davodil:** *(side-eye at Luna)* Anyway, where you are is the SGGS headquarters. Home base of the Super Good Guys Squad. We are a spy society working for good. Our spies are made up of some recruits and some children of our current or former spies. A current spy trains them. And eventually they become full spies too.
+
+There's one main problem. Our rival: The SBGS — the Super Bad Guys Society.
+
+**Luna:** You guys have rivals? *(sassy)*
+**Lucy:** You have rivals? *(nervous)*
+**Mr. Davodil:** Yes. And please. No more interruptions. … There is a super powerful crystal. It can be used to do all kinds of things — for good, or bad. And the bad guys have it. They snuck into HQ one night when most of us were away and overwhelmed the spies who were here. There were just too many of them. I blame myself. We weren't ready. But we have another thing that they don't. A powerful amulet. And they need that to help power the crystal. But we have it secure for right now.
+
+**Lucy:** *(about to speak)*
+**Mr. Davodil:** *(cuts her off)* I know you're wondering why you're here. We need you to join the mission to steal back the crystal.
+**Luna:** Alright, I'm down, let's go! *(stands up, hits hand on table)*
+**Mr. Davodil:** But you don't even know what you're—
+**Luna:** I don't care what it is. I still want to do it.
+**Mr. Davodil:** *(smacks forehead, pinching bridge of nose)* Before you say anything, don't you want to know more?
+
+**Cindy:** *(presses button on remote — a big screen comes down)* We've gathered info on our bad guys. First, the leader of the SBGS — most call him Falcon, leader of the SBGS — kind of a threat, but his daughter and son are much more of a problem. Next up, we've got Macy — she may not have all the smarts, but that girl can hold a weapon the right way, so we need to be careful when dealing with her. Our last and biggest threat is Ludwig. He has more brains than a regular human. He can create super-destructive weapons and can outsmart you in every fight.
+
+The bad guys have guns that shoot light blue lasers that freeze whatever they hit.
+
+**Lucy / Luna:** What? What?! What do you mean? Ludwig can…? Macy can wh—?
+**Cindy:** *(interrupts)* Well, we can't explain everything right now, moving on.`,
+
+  s8: `*(They walk quickly, turning corners down hallways, and reach a door that says* **FASHION ROOM!** *on it. Cindy and James open the door.)*
+
+*Inside: a woman wearing flair pants and a green t-shirt with hangers in her hand holding a black dress and a tuxedo, scurrying around the room, a measuring tape around her neck. She stops when she realizes other people have entered.*
+
+**Josie:** Hello!
+**Cindy:** Hi Josie. The twins are here. I brought them to meet you.
+**Josie:** Ah! Splendid! I couldn't wait to see them.
+
+*(L & L step forward, Josie gasps.)*
+
+**Josie:** Oh, Luna! You have the proud gaze of your father! And Lucy, you have the soft eyes of your mother. Oh, you look just like them! …
+**L & L:** Wait, you knew our parents?
+**Josie:** Of course! Some of the best spies in this place!
+**Cindy:** Still on for doing my nails later, Josie?
+**Josie:** Of course, Cindy, of course! … Well, I'm terribly sorry, Cindy and James, but I am terribly busy right now, and I don't really have time for visitors… but it was nice seeing you and meeting you. TOODLES! *(she begins scurrying across the room)*`,
+
+  s9: `*That night, after talking for a long time, Lucy and Luna go to bed at 11:45.*
+
+*At 3 a.m., something wakes Lucy up. It's Luna tapping on her head. Luna is hungry, and says she saw ice cream sandwiches in the freezer downstairs. Luna convinces Lucy to go with her.*
+
+*They sneak around HQ, dodging guards and eventually get to the big freezer in the kitchen. Take ice cream sandwiches, and run, dodge, hide, and get back to their room. They unwrap, cheers their ice cream sandwiches, and chow down. And they talk about their lives.*`,
+
+  s10: `*Next day. Cindy, James, and the leader of SGGS are showing them around. They get to the kitchen.*
+
+**Cindy:** *(looking inside the freezer)* I could have sworn there were two more ice cream sandwiches in here. It was probably Jonah, he's always stealing snacks. Ugh! I'm going to get him later!
+
+*(Lucy and Luna look sideways at each other, guilty, trying not to laugh.)*`,
+
+  s11: `*A few days after L & L have arrived. Cindy and James walk downstairs and enter the room where L & L are sleeping.*
+
+**Cindy / James:** Good morning! It's time to wake up now!
+**Luna:** Five more minutes! *(groggily)*
+**Cindy:** If you didn't remember, you said that five minutes ago!
+**Luna:** Ugh, fine.
+**James:** Where's Lucy?
+**Luna:** Already in our closet scouring it for an outfit to wear today.
+**Cindy:** Well, at least someone's ready to go.
+
+*(A few minutes later, both girls were ready and following Cindy and James down a hallway.)*
+
+**Lucy:** What are we doing today?
+**James / Cindy:** Fighting practice.
+**Luna:** *(jumps up and down in excitement)*
+**Lucy:** *(unsure)* Well, I've never done that before. What if I'm not good enough?
+**Cindy:** It's your first day; no one is the best on their first day.
+**Lucy:** I bet Luna will be.
+**James:** She might be, because she has the right attitude. You've got to change yours. Put your expectations higher. And maybe it'll be a better day than you think.
+
+*(They open 2 doors and enter into a training facility — like Sky Zone's bouncy basketball court, though half the room has a regular floor. Cindy presses a green button and obstacles appear.)*
+
+**James:** Welcome to practice.
+**Cindy:** It's going to be an interesting ride.
+
+*(Time-lapse sequence over multiple days; L & L get faster and better throughout. After sequence — James and Luna alone in an empty room.)*
+
+**James:** This is your final test of fighting for your first year. If you can pass this, you're ready to go on a mission.
+**Luna:** Alright, I'm ready.
+**James:** I'm going to be standing at the end of this room. You need to get past me without me noticing. I will be turning around at some point, but this isn't red light / green light. If I see that you've moved, then you fail. … You do have an assortment of gadgets there. Use them wisely. Alright, let the challenge begin. *(walks toward the end of the room)* You have three tries.
+
+**Attempt 1:** *Luna runs toward the side as James is turned away. James turns and sees her.*
+**James:** You have two attempts left.
+
+**Attempt 2:** *Luna uses a turbo-blaster (clap your hands and it blasts you quickly). She almost makes it, but slows down near the end. James trips her.*
+**James:** *(smiling)* One more try left.
+
+**Attempt 3:** *Luna uses her grappling hook. When James turns his back, she runs and jumps with her combat boots, reaches the ceiling, uses the levitation gadget, and crawls through ceiling tiles. She peeks down — she's right above James. She attaches the grappling hook and swings down with a smoke bomb in her hand. From the smoke, Luna runs behind James, trips him.*
+
+**James:** Congratulations, Luna. You are ready to go on a mission. I knew you could do it.
+
+*(James and Luna walk toward exit together.)*
+
+*COMMERCIAL BREAK — pumpkin spice cologne #2*`,
+
+  s12: `*At SGGS headquarters, L & L's room (September 10).*
+
+**Cindy:** *(walks in)* Happy Birthday, you two!
+
+*(Both girls are confused.)*
+
+**Luna:** I've always celebrated my birthday on July 8?!
+**Lucy:** Yeah, and I've always celebrated mine on March 16!
+**Cindy:** Well, the actual day you were born is September 10.
+**Luna:** Oh! Why didn't we know that?!
+
+*(Greta and Mark walk in.)*
+
+**Greta:** Well, because the SGGS took every measure to make sure you wouldn't find out you were twins, and having the same birthday was one of them.
+**Mark:** Look, they just didn't want you finding out you were twins because it could have been a risk if the bad guys tried to find you… that wouldn't have turned out well.
+**Cindy:** They were doing it for safety…
+**James:** *(walking in)* Even though I always thought from the start you should have just known.
+**L & L:** It's fine. We know each other now.
+
+*(Later in the day — dining hall, birthday cake showing #13, candles. Everyone — James, Cindy, Luna, Lucy, Greta, Mark, Mr. Davodil, plus a few extra spies — sing the Happy Birthday song.)*
+
+*(Cindy and James each give L & L a present; so do Greta and Mark.)*
+
+**L & L:** *(opening Cindy and James's present at the same time)* What are these?!
+**Cindy:** Well, on any spy's 13th birthday, they always get a gadget bracelet.
+**Luna:** And what are these? *(holding up keys)*
+**James:** Those are the keys to your very own jet.
+**Luna:** *(exploding with excitement)*
+
+*(L & L open Greta and Mark's gifts.)*
+
+**Lucy:** *(opens special boots)* Oh wow! These are so cool!
+**Greta:** They're custom made. Click the button at the front, on the inside — a little surprise is there.
+**Lucy:** *(tries it — a sharp blade comes out from the toe)* Oh wow, that's so cool!
+**Greta:** There are a few other things it can do. We'll go over them in detail later.
+**Luna:** *(opens combat boots)* Cool! What do these do?
+**Mark:** Why don't you try running and jumping in them?
+**Luna:** *(laces up, takes a running start, leaps to the ceiling, gracefully floats down)* WOW! These are awesome!
+
+*(Josie gets them special sunglasses.)*
+
+*(Then they hear a bang with alarm sounding and red light flashing.)*
+
+**Cindy:** The bad guys! They're here! They're trying to steal the amulet!
+
+*(Everyone scrambles away.)*`,
+
+  s13: `*Cindy and James lead L & L up to a higher part of the SGGS — huge room, computers for tracking, where the amulet is stored. Cindy and James go down to start fighting the bad guys.*
+
+*Cindy, running down stairs, drops something. Luna picks it up. It's a grappling hook. Luna sees the good guys are losing; she sees Martin throw an object that breaks the glass around the amulet. The amulet falls and rolls across the floor.*
+
+*Luna sees Cindy is in trouble with three guys twice her size. Grappling hook in hand, she throws it across — it wraps around a beam ahead.*
+
+**Lucy:** No, wait, don't!
+
+*But it's too late. Luna jumps and swings at an angle, kicking the guy holding Cindy in the head.*
+
+**Luna:** Eat shoes, you big baboon!
+
+*She swings to where the amulet had fallen, and races another bad guy toward it. She kicks him in the back of the head, picks up the amulet. Over all the fighting, she hears:*
+
+**Voice:** Put it in the glass case and press the red button!
+
+*She does it, and immediately, it disappears. The bad guys retreat.*
+
+*They relocate the amulet to Lucy's room because no one would expect it to be there.*`,
+
+  s14: `*Montage of Josie testing outfits on L & L.*`,
+
+  s15: `*SBGS headquarters. Mirrors around the room, white with electricity sparks on the walls. In the center, a cylinder with stairs going up to the top.*
+
+*Ludwig is standing on top of the cylinder, admiring himself, striking muscle poses, looking in a mirror.*
+
+**Aurora:** *(enters the room through side door)*
+**Ludwig:** AAH! *(startled)*
+**Aurora:** I was supposed to be looking for you. It's Loooodwig, right?
+**Ludwig:** It's LUD-wig, you imbecel! Who are you?!
+**Aurora:** Oh, I'm so sorry! I'm Aurora, one of the new maids.
+**Ludwig:** Oh… you're a new maid? I forgot I ordered more of those. Well, now that you're here, please go get me an iced coffee, and make it snappy.
+
+*(Maid leaves; Martin walks in.)*
+
+**Martin:** So, Ludwig, I've been thinking. We don't have the amulet yet. *(snide look)*
+**Ludwig:** Yes, Martin, of course, I'm aware. If we did have it, I'd be downstairs with the crystal because TONIGHT'S THE FULL MOON!
+**Martin:** Well… of course. So I was wondering if I could bring a few guys to the SGGS headquarters and try to steal it back.
+**Ludwig:** Martin, I can't allow you to do that.
+**Martin:** Ugh! Why not?!
+**Ludwig:** It would be completely stupid to go back there now. They're ready for us now. And Martin, if you dare go there without my permission, you can kiss your spot in the SBGS goodbye. But… we can have a meeting with the others and talk about it.
+
+*(Martin stomps away. Ludwig goes back to admiring himself.)*`,
+
+  s16: `*Macy, Martin, Ludwig, Falcon (SBGS leader).*
+
+**Ludwig:** I want to get this plan into action. So I need that amulet!
+**Macy:** We've tried. But the people we sent weren't good enough. They couldn't do it.
+**Falcon:** I know why. We sent too many people. They were ready for it.
+**Macy:** I thought that too. My idea was to just send Martin to go get it because he's the best out of everyone.
+**Ludwig:** What?! You think THAT'S a good idea?
+**Macy:** Of course it is. You even asked for us to do it fast. If you didn't remember, Martin was the closest to getting the amulet the last time. It was almost in his hands until Lucy kicked him in the back of the head. So I think we should just send him and see how it goes.
+**Ludwig:** See how it goes?! That's not even a plan! *(stutters… uh, ah…)*
+**Falcon:** What if you make a tracker for the amulet, so Martin knows exactly where it is.
+**Ludwig:** *(looks up, about to laugh)* … wait a minute, that could work… I could make something like that.
+**Macy:** Well, then that settles it.
+**Ludwig:** Fine, I'll go work on it now. It should be done in an hour or two.
+**Macy:** Martin, get ready. You've got an amulet to steal.`,
+
+  s17: `*Lucy is in her room in the SGGS headquarters. She has the amulet in her hand. She is staring at it, thinking about her parents — and how she is not sure she is cut out for the mission.*
+
+*Suddenly, someone crashes through her window. It is Martin. (duh duh duh!)*
+
+**Martin:** *(with a fake, friendly voice)* Alright, Lucy, hand over the amulet, and no one gets hurt.
+**Lucy:** *(doesn't respond but grips the amulet tighter)*
+**Martin:** Now come on, why can't you just hand it over like a good little girl? *(little more irritated)*
+**Lucy:** No! *(accidentally a squeak when trying to sound strong)*
+
+*Martin leaped over the room toward her, but just at that moment, Lucy remembered every fighting skill she had ever been taught.*
+
+*(flashback to training scenes)*
+**Inner voice:** Duck right! Hit the ankle! Try to trip him!
+
+**Martin:** *(scoffs)* You're tougher than I thought, but I wasn't really trying.
+
+*(He leaps, bounces off the ceiling, pushes her toward the broken window. Lucy hangs halfway out, barely holding the amulet.)*
+
+**Martin:** Look, hand over the amulet, and you'll be fine. If not, I don't think you will be.
+
+*(Lucy remembers her boot's secret button — pushes it with her toe, a spike comes out the front.)*
+
+**Lucy:** *(yelled strongly)* No! *(shoots her boot into Martin's leg. He yelps and jumps back.)*
+
+*(Lucy throws a jail ball.)*
+
+**Martin:** *(scoffs)* Did you really think that would work?
+**Lucy:** No, it was just enough time to distract you. *(throws a tiny rope that expands to tie someone up)*
+
+*(Just then, Luna comes running into the room with Cindy.)*
+
+**Luna and Cindy:** WHAT'S GOING ON?
+**Lucy:** Martin came in and tried to steal the amulet.
+**Cindy:** Thank goodness you're okay. *(calls out)* JOHN! SIERRA! *(they take Martin away)*
+
+*In this moment, Luna convinces Lucy to come on the mission by telling her she fought off Martin.*
+
+*Just then, Martin runs back into the room, snatches the amulet, jumps out the window —*
+
+**Martin:** See you suckers!
+
+*— lands in a jet and soars off.*
+
+*Cindy follows. She clicks a button on her bracelet, a jet catches her mid-air. She zooms after Martin.*
+
+**Cindy:** I see what the bad guys are trying to do. They sent one in, but all the rest were outside. So there were too many jets to sort out which one Martin was in.`,
+
+  s18: `*Cindy, Lucy, Luna, James — in a big jet with the leader of the SGGS.*
+
+**Leader of SGGS:** You'll be the ones in there, but there will be other agents outside their base. But they will not be going in with you. It's best if we don't send many people in there so they don't figure out what we're doing.
+
+*(Gadget demo: tiny oval in hand. Press a button + jump = transforms into a jet. As they near the ground, press another button = transforms into a super-fast motorcycle. Another button = back to a hand-held gadget.)*`,
+
+  s18a: `*They're zooming on their motorbikes. Finally, they reach a tiny building and stop. They press the oval button — the motorcycles turn back into hand-held gadgets, which they all put in their pockets.*
+
+*On the ground: dry, packed land, few scrubby dead trees.*
+
+*(James and Luna in matching black mission outfits. Lucy and Cindy in black dresses.)*
+
+*They enter the small building. It's an old newspaper printing building. In an abandoned town. Looking for a secret entrance to SBGS headquarters.*`,
+
+  s19: `*(Characters walking carefully.)*
+
+**Lucy:** This is their base?
+**Cindy:** No, there's a secret entrance to their actual base in here.
+**Luna:** How do we know that?
+**Cindy:** Well, while I was chasing Martin in a jet when he stole the amulet, I flung a tracking device on his jet, and I saw where it landed.
+**James:** But be careful, it probably has booby-traaaa— *(falls through floor)*
+**Cindy:** James!
+**James:** I'm fine. I'm fine. It's only my pride that's hurt.
+
+*(They help James get out.)*
+
+**Lucy:** Hey, wait a second. You see that stack of newspapers over there?
+**Luna:** Uh… yeah.
+**Lucy:** Who could have stacked them like that? It's not the best stacking I've ever seen, but who could have done that? This town is abandoned.
+**James:** *(carefully walks across the floor and shifts aside the newspapers)* Hey! There's an opening here.
+**Cindy:** Good job, Lucy. That's gotta be the secret entrance.
+**Luna:** Nice one, sis!
+**James:** *(looks through the window)* We better go quickly, the sun's setting.
+
+*(They enter the opening. In the tunnel, the walls turn from dirt to white metal with blue lights coming through.)*
+
+*(Suddenly, walls pop up between them, separating them. Through their headphones, they all start asking, "Are you okay?!" — they agree to keep walking straight.)*`,
+
+  s20: `*Zoom in to a tiny hole in the wall — a camera — taking us to Ludwig in his lair, a timer ticking down to when the moon will be in just the right position to activate the crystal.*
+
+**Ludwig:** Sibling! We have problems… *(shows camera)* … go find them and bring them to me!`,
+
+  s21: `*Cut to James — he and Luna talking through earpieces, walking straight.*
+
+*Camera on Luna. We hear James.*
+
+*Luna hears James run into SBGS. After some kerfuffle, while James is fighting, his headset falls off. (You can't see it, but James gets captured.)*
+
+**Luna:** I bet he got caught.`,
+
+  s22: `*Luna keeps walking, remembering: "Just go straight. Don't turn." She tries Cindy — no answer. When she tries Lucy, she hears —*
+
+**Macy:** Well, well, well… if it isn't Luna! I've heard a lot about you… youngin'.
+
+*(Macy walks toward Luna. Other bad guys come too.)*
+
+**Macy:** Stop! Let me fight this one alone.
+
+*(Macy pulls out a glowing sword and battles Luna. Luna gets Macy pinned to the ground.)*
+
+**Luna:** Not so young now, huh?!!
+**Macy:** Oh, you fool! You know nothing about fighting!
+
+*(Macy leaps up, twists in the air, and pins Luna to the ground.)*
+
+**Macy:** Only a real fighter would know that you never gloat until the battle is over.
+
+*(Three other bad guys take Luna and walk away.)*`,
+
+  s23: `*Camera back to Lucy. Lucy walking. Hears someone coming. She looks up and sees a vent. She climbs into it quickly and quietly, sees bad guys below.*
+
+**Bad guy:** Wasn't she just here? I swear I heard noise over here…
+**Other bad guy:** Me too!
+
+*Lucy decides not to climb down but to crawl through the vents. She sees a corridor below — different from the one she's been walking in. She drops down and begins walking. She looks into a closet and sees uniforms for SBGS servants. She puts one on with a badge, and sunglasses too.*
+
+*Aurora walks down the hall.*
+
+**Aurora:** Oh, you must be one of the new maids. I'm just on my way to Looodvig — no wait, Ludwig! — some iced coffee.
+**Lucy:** *(in a fake voice)* Oh, maybe I should make some cookies for him.`,
+
+  s24: `*Cookie scene — Lucy makes super-fast cookies and decorates them with* **"Ha! I win!"**`,
+
+  s25: `*Very large room. Ludwig in front of control panel with large cylinder holding crystal. A laser gun that can control people's minds on top of the cylinder. Timer counting down until moon hits directly onto the top.*
+
+*Other part of the room: Luna (captured by Macy) sees James in a cell. Luna is put into the cell with James.*
+
+**Luna:** James, make a run for it!
+
+*(He can't — he's chained to part of the cell.)*
+
+**Luna:** Where's Cindy?
+
+*In another corner there's a door. Inside is Cindy, with guys guarding her, trapped in that small room. Cindy was captured with James, but escaped briefly to find L & L — got captured again, put under heavier guard.*`,
+
+  s26: `*Lucy went down a hall with Aurora — Lucy holding cookies, Aurora holding iced coffee.*
+
+*In the hall they see posters. Poster: "Science is cool!" Aurora pushes a hidden button on the poster — an entrance appears.*
+
+*Once in, they walk to where the control panel is. Only 10 minutes left on the timer countdown.*
+
+**Aurora:** *(gives Ludwig iced coffee)*
+**Lucy:** *(gives him the cookies)* Here you go!
+**Ludwig:** Oh these are awesome! … Wait, who are you?
+**Lucy:** I'm one of the new maids.
+**Ludwig:** I don't remember asking for any new maids… *(but he loves the cookie design, so he stops questioning)* … I need to focus! Bring all the extra cookies to the small room to give to the guards.`,
+
+  s27: `**Luna:** *(looking at Lucy)* "New maid"… and I think that's Lucy.
+**James:** No, can't be, we don't know where Lucy is.
+**Luna:** I bet you $50 that's Lucy.
+**James:** Not the time to be making a bet, but deal.
+
+**Lucy:** *(flips her sunglasses down, shows a worried expression toward James and Luna)*
+**James:** Dangit!
+
+*Lucy enters the small room to deliver cookies. She places the plate on a stool.*
+
+**Lucy:** Here's some cookies!
+
+*The SBGS guards start fighting one another because there are three cookies and four of them.*
+
+*While they're distracted, Lucy goes over to Cindy. Starts to untie knots of rope holding her. Frees Cindy. They exit the room past the fighting guards.*
+
+*As Lucy and Cindy step out, they see James and Luna fighting — Luna has the metal cutter on her boot, cuts through jail bars. They start fighting guards as they escape.*
+
+*Ludwig sees what's going on. 2 minutes left on the timer.*
+
+**Ludwig:** GET THEM! GET THEM!`,
+
+  s28: `*Big fight scene in the control room. SGGS wins. Just as it's ending, they look around —*
+
+**Someone:** Where's Ludwig?!
+
+*(He was at the top of his machine. 30 seconds left.)*`,
+
+  s29: `*Before anyone can do anything, James and Cindy step in front of L & L. But L & L change places with them to get in front of C & J.*
+
+**Ludwig:** Your time is up. You tried your best, but now the moon is about to align perfectly with my machine, and it looks like you're my first target to control.
+
+*(They're scared. The moon aligns. Ludwig presses the button… nothing happens. Their minds are not controlled.)*
+
+*It didn't work because a small part of the crystal was missing. At just that moment, Lucy and Luna feel a click open on their necks. Their lockets had opened. Inside are two rings. At the top of each ring is a pinkish diamond — the exact same color as the crystal in the machine.*
+
+*The crystal was not complete!*
+
+*The crystal begins to glow and vibrate. They realize it's going to explode. A part of the crystal detaches, breaks the glass case, flies across the room. That little shard of crystal explodes —* **BOOM! HUGE EXPLOSION!**
+
+**Someone:** RUUUUUNNNNN!`,
+
+  s30: `*Scenes of running, dodging, ducking, jumping, explosions. A big gap they have to jump.*
+
+*The SGGS reaches the entrance of the headquarters. They press a button on their wrist — a jet comes, they enter, fly off, and reach a mountain cliff where they exit. They can see the SBGS headquarters in the distance.*`,
+
+  s31: `**Luna:** That was so awesome!
+
+*(A piece of wood flies toward them and crashes on the mountain behind.)*
+
+**James:** Back up girls, you don't want to get hit.
+
+*(James gets down on one knee, takes out a box, opens the ring.)*
+
+**James:** Cindy, will you marry me?
+**Cindy:** *(pause of excitement)* Yes!
+
+*(As they kiss, the whole SBGS headquarters explodes in the distance during sunrise. Luna gags. Lucy: "awww." Back to James and Cindy.)*`,
+
+  s32a: `*Cuts to Cindy and James's wedding reception.*
+
+*Lucy & Luna reflect — happy about this mission, but: what do we do now?*
+
+*Cindy and James say they can adopt them — this happens.*`,
+
+  s32b: `*Shows Ludwig and Macy being brought to jail. Macy kicks the guard holding Ludwig, presses a button on her necklace — jet packs appear for both. They escape.*
+
+**Macy:** I told you, we should have done my plan.
+**Ludwig:** I hate to say this, but I guess we have to do your plan.
+
+*(They fly off.)*`,
+
+  s32c: `*Luna, Lucy, Cindy, James driving in a red car.*
+
+**Lucy or Luna:** So where are we going to live now? Headquarters?
+**Cindy:** No, we're going to live in the Davodil mansion — huge red and white mansion with some gold.`
+};
+
+function formatScript(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
+const COSTUMES = [
+  {role:'Lucy',actor:'Maria',items:['Yellow tshirt with pink heart, green jeans, plain gray boots (calf-height), locket','Pajamas + diamond/oval black sunglasses','Black mission outfit','Wedding outfit: dress + dress shoes','Maid costume: black shirt, white pocket, gray poofy sleeves, dark red short tie, white skirt, heels','Spare pair of boots']},
+  {role:'Luna',actor:'Hildie',items:['Navy blue tshirt, silver hoop earrings, dirty ripped jean shorts, worn out gym shoes, locket','Pajamas + triangle black sunglasses','Combat boots','Wedding outfit: dress + dress shoes','Black mission outfit']},
+  {role:'Grandma Greta',actor:'Hildie',items:['Fuzzy grandma sweater, green pants, tiny brown shoes','Cane (blue/brown), glasses','Wedding outfit']},
+  {role:'Cindy',actor:'Eden',items:['Black dress, black heel boots, heart sunglasses, reddest lipstick, gold hoops, gold necklace with red gem','Hair: curved out at bottom','Wedding dress + shoes + hair']},
+  {role:'James',actor:'Casper',items:['Black suit with tie, white shirt underneath, black tie, black shoes, square sunglasses']},
+  {role:'Background spies',actor:'—',items:['Black suit with tie, white shirt, black tie, black dresses']},
+  {role:'Mr. Davodil',actor:'Ollie',items:['Black suit, tie, white shirt, black shoes (navy blue tie?), circle sunglasses']},
+  {role:'Mark',actor:'Archie',items:['Jeans, button-up shirt','Suit and tie for spy HQ scenes']},
+  {role:'Josie',actor:'Quinn',items:['Red tank top with blue firework, green jacket, brown short skirt, earrings, flashy makeup (blush, cat eye, pink lipstick), dark blue heels','Blue ruler on belt, measuring tape around neck, scissors, pen/pencil behind ear']},
+  {role:'Ludwig',actor:'Lewis',items:['White tux/suit with light blue tie (L on it), dark red tie, fancy shoes','Hair: side swipe','Always has iced coffee in hand or near him']},
+  {role:'Macy',actor:'Dorothy',items:['White short dress with little flare, black nail polish, tiny white heels, black lipstick, red skull earrings','Hair always down']},
+  {role:'Falcon',actor:'Gideon',items:['Dark red suit with red or black tie / OR black suit with dark red tie']},
+  {role:"Chaz/Chip (Macy's pet)",actor:'Tanuki',items:['Komodo dragon']},
+  {role:'Martin',actor:'Owen',items:['Black pants, gray shoes, rolled up white long sleeve tshirt with rolled up sleeves, some gray on it with black pocket']},
+  {role:'Aurora',actor:'Quinn',items:['Maid costume: black shirt, white pocket, gray poofy sleeves, dark red short tie, white skirt, heels']}
+];
+
+const CHECKS = [
+  {k:'setup',l:'Location & props ready'},
+  {k:'shot',l:'Shots captured!'}
+];
+
+const STATUS_LABELS = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  done: 'Done!'
+};
+
+const STORE_KEY = 'elsa-movie-tracker-v1';
+let state = {};
+let view = 'scenes';
+let actFilter = 'all';
+let todoOnly = false;
+let openId = null;
+let editingScriptId = null;
+let castFilter = '';
+
+function getActors() {
+  const map = new Map();
+  for (const c of COSTUMES) {
+    if (c.actor === '—' || !c.actor) continue;
+    if (!map.has(c.actor)) map.set(c.actor, []);
+    if (!map.get(c.actor).includes(c.role)) map.get(c.actor).push(c.role);
+  }
+  return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+function getRolesForActor(actor) {
+  const entry = getActors().find(([a]) => a === actor);
+  return entry ? entry[1] : [];
+}
+
+function sceneHasRole(scene, roleName) {
+  const variants = [roleName.trim()];
+  const parts = roleName.split(' ');
+  if (parts.length > 1) variants.push(parts[parts.length - 1]);
+  if (roleName.includes('/')) variants.push(...roleName.split('/').map(s => s.trim()));
+  return variants.some(v => {
+    const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim();
+    if (!escaped) return false;
+    return new RegExp('\\b' + escaped + '\\b', 'i').test(scene.c);
+  });
+}
+
+function sceneHasActor(scene, actor) {
+  return getRolesForActor(actor).some(r => sceneHasRole(scene, r));
+}
+
+function getScriptText(id) {
+  const s = state[id] || {};
+  return s.scriptDraft ?? s.scriptEdit ?? SCRIPT[id] ?? '';
+}
+
+function isScriptEdited(id) {
+  const s = state[id] || {};
+  return s.scriptEdit !== undefined && s.scriptEdit !== null && s.scriptEdit !== SCRIPT[id];
+}
+
+function captureScriptDraft() {
+  if (editingScriptId !== null) {
+    const ta = document.querySelector(`[data-script-textarea="${editingScriptId}"]`);
+    if (ta) state[editingScriptId].scriptDraft = ta.value;
+  }
+}
+
+function autoResizeTextarea(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight + 4) + 'px';
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) state = JSON.parse(raw);
+  } catch(e) { state = {}; }
+  for (const sc of SCENES) {
+    if (!state[sc.id]) {
+      state[sc.id] = { status:'not_started', checks:{}, takes:0, prodNotes:'' };
+    }
+  }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e) { console.error('save failed', e); }
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function getStats() {
+  const total = SCENES.length;
+  let done = 0, prog = 0, todo = 0;
+  for (const sc of SCENES) {
+    const s = state[sc.id]?.status || 'not_started';
+    if (s === 'done') done++;
+    else if (s === 'in_progress') prog++;
+    else todo++;
+  }
+  return { total, done, prog, todo, pct: Math.round(done/total*100) };
+}
+
+function renderStats() {
+  const s = getStats();
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-num">${s.total}</div><div class="stat-lbl">Scenes</div></div>
+    <div class="stat s-done"><div class="stat-num">${s.done}</div><div class="stat-lbl">Done</div></div>
+    <div class="stat s-prog"><div class="stat-num">${s.prog}</div><div class="stat-lbl">Filming</div></div>
+    <div class="stat s-todo"><div class="stat-num">${s.todo}</div><div class="stat-lbl">To shoot</div></div>
+  `;
+}
+
+function renderScriptSection(sc) {
+  const isEditing = editingScriptId === sc.id;
+  const scriptText = getScriptText(sc.id);
+  const edited = isScriptEdited(sc.id);
+
+  if (isEditing) {
+    return `
+      <div class="section-divider">Script</div>
+      <div class="script-block script-block--editing">
+        <textarea class="script-textarea" data-script-textarea="${sc.id}">${escapeHtml(scriptText)}</textarea>
+        <div class="script-edit-actions">
+          <span class="script-help">Use <strong>**Character:**</strong> for names and <em>*action*</em> for stage directions.</span>
+          <button class="script-btn script-btn--cancel" data-script-cancel="${sc.id}">Cancel</button>
+          <button class="script-btn script-btn--save" data-script-save="${sc.id}">Save changes</button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="section-divider">Script</div>
+    <div class="script-block">
+      <div class="script-toolbar">
+        ${edited ? '<span class="script-edited">✎ edited</span>' : ''}
+        ${edited ? `<button class="script-btn script-btn--reset" data-script-reset="${sc.id}">Reset to original</button>` : ''}
+        <button class="script-btn" data-script-edit-toggle="${sc.id}">✎ Edit</button>
+      </div>
+      <div>${formatScript(scriptText)}</div>
+    </div>
+  `;
+}
+
+function renderCastBanner() {
+  const roles = getRolesForActor(castFilter);
+  const sceneCount = SCENES.filter(s => sceneHasActor(s, castFilter)).length;
+  const rolesText = roles.length === 1 ? roles[0] : roles.slice(0, -1).join(', ') + ' & ' + roles.slice(-1);
+  return `
+    <div class="cast-banner">
+      <div>
+        <div class="cast-banner-greeting">Hi —</div>
+        <div class="cast-banner-name">${escapeHtml(castFilter)}</div>
+      </div>
+      <div class="cast-banner-info">You're playing <strong>${escapeHtml(rolesText)}</strong> in <strong>${sceneCount}</strong> scene${sceneCount !== 1 ? 's' : ''}. Tap any scene to read your lines.</div>
+      <button class="cast-banner-clear" data-cast-clear>Show all scenes</button>
+    </div>
+  `;
+}
+
+function populateCastSelect() {
+  const sel = document.getElementById('cast-filter');
+  if (!sel) return;
+  const actors = getActors();
+  let html = '<option value="">Cast · all</option>';
+  for (const [actor, roles] of actors) {
+    html += `<option value="${escapeHtml(actor)}">${escapeHtml(actor)} · ${escapeHtml(roles.join(', '))}</option>`;
+  }
+  sel.innerHTML = html;
+  sel.value = castFilter;
+  sel.classList.toggle('is-active', !!castFilter);
+}
+
+function loadFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const actorParam = params.get('actor') || params.get('cast');
+  if (actorParam) {
+    const matched = COSTUMES.find(c => c.actor && c.actor.toLowerCase() === actorParam.toLowerCase());
+    if (matched) castFilter = matched.actor;
+  }
+}
+
+function updateUrl() {
+  const params = new URLSearchParams();
+  if (castFilter) params.set('actor', castFilter);
+  const search = params.toString();
+  const url = window.location.pathname + (search ? '?' + search : '');
+  try {
+    history.replaceState({}, '', url);
+  } catch (e) {
+    // Silently fail in sandboxed iframes (Claude preview, srcdoc, etc).
+    // Filter still works in-page; URL just won't update for sharing.
+  }
+}
+
+function renderSceneCard(sc) {
+  const st = state[sc.id];
+  const isOpen = openId === sc.id;
+  const checksHtml = CHECKS.map(c => `
+    <label class="check ${st.checks[c.k] ? 'checked' : ''}">
+      <input type="checkbox" data-check="${sc.id}:${c.k}" ${st.checks[c.k] ? 'checked' : ''} />
+      <span class="check-box"></span>
+      <span>${c.l}</span>
+    </label>
+  `).join('');
+  const statusBtns = Object.entries(STATUS_LABELS).map(([k,l]) => `
+    <button class="status-btn b-${k} ${st.status === k ? 'active' : ''}" data-status-set="${sc.id}:${k}">${l}</button>
+  `).join('');
+  return `
+    <div class="scene-card ${isOpen ? 'open' : ''}" data-card="${sc.id}">
+      <div class="scene-head" data-toggle="${sc.id}">
+        <div class="scene-num act-${sc.a}">${sc.n}</div>
+        <div class="scene-info">
+          <div class="scene-title">${escapeHtml(sc.t)}</div>
+          <div class="scene-chars">${escapeHtml(sc.c)}</div>
+        </div>
+        <div class="scene-status s-${st.status}">${STATUS_LABELS[st.status]}</div>
+        <svg class="scene-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      ${isOpen ? `
+        <div class="scene-detail">
+          <div class="field"><div class="field-lbl">What happens</div><div class="field-val">${escapeHtml(sc.w)}</div></div>
+          <div class="field"><div class="field-lbl">Setting</div><div class="field-val">${escapeHtml(sc.s)}</div></div>
+          <div class="field"><div class="field-lbl">Props</div><div class="field-val">${escapeHtml(sc.p)}</div></div>
+          ${sc.notes ? `<div class="field"><div class="field-lbl">Elsa's notes</div><div class="field-val notes">"${escapeHtml(sc.notes)}"</div></div>` : ''}
+          ${(SCRIPT[sc.id] !== undefined || isScriptEdited(sc.id)) ? renderScriptSection(sc) : ''}
+          <div class="prod-panel">
+            <div class="status-buttons">${statusBtns}</div>
+            <div class="section-divider">Checklist</div>
+            <div class="checks">${checksHtml}</div>
+            <div class="takes-row">
+              <span class="takes-lbl">Takes captured</span>
+              <button class="takes-btn" data-takes="${sc.id}:-1">−</button>
+              <span class="takes-num">${st.takes}</span>
+              <button class="takes-btn" data-takes="${sc.id}:1">+</button>
+            </div>
+            <div class="section-divider">Production notes</div>
+            <textarea class="prod-notes" data-notes="${sc.id}" placeholder="What worked, what to redo, things to remember...">${escapeHtml(st.prodNotes)}</textarea>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function charKey(role) {
+  return role.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+let characterData = {};
+const CHAR_STORE_KEY = 'elsa-movie-characters';
+
+function loadCharacterData() {
+  try {
+    const raw = localStorage.getItem(CHAR_STORE_KEY);
+    if (raw) characterData = JSON.parse(raw);
+  } catch(e) { characterData = {}; }
+}
+
+function saveCharacterData() {
+  try {
+    localStorage.setItem(CHAR_STORE_KEY, JSON.stringify(characterData));
+  } catch(e) {
+    alert('Could not save — browser storage may be full. Try removing some character photos.');
+  }
+}
+
+function getCharData(role) {
+  const k = charKey(role);
+  return characterData[k] || {};
+}
+
+let pendingCharImageId = null;
+
+function processCharacterImage(file, charKey) {
+  if (!file || !file.type.startsWith('image/')) {
+    alert('Please choose an image file.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxSize = 600;
+      let w = img.width, h = img.height;
+      if (w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
+      else if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
+      canvas.width = Math.round(w);
+      canvas.height = Math.round(h);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      try {
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        if (!characterData[charKey]) characterData[charKey] = {};
+        characterData[charKey].thumbnail = dataUrl;
+        saveCharacterData();
+        render();
+      } catch (err) {
+        alert('Could not process image. Try a smaller file.');
+      }
+    };
+    img.onerror = () => alert('Could not read that image file.');
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCharacters() {
+  return COSTUMES.map(c => {
+    const k = charKey(c.role);
+    const data = getCharData(c.role);
+    const thumb = data.thumbnail;
+    const desc = data.description || '';
+    const actorLine = c.actor && c.actor !== '—' ? `played by ${escapeHtml(c.actor)}` : 'unassigned';
+    return `
+      <div class="character-card">
+        <div class="character-thumb-wrap">
+          ${thumb ? `
+            <img class="character-thumb" src="${thumb}" alt="${escapeHtml(c.role)}">
+            <div class="character-thumb-actions">
+              <button class="character-thumb-btn" data-char-img-change="${k}">Change</button>
+              <button class="character-thumb-btn danger" data-char-img-remove="${k}">Remove</button>
+            </div>
+          ` : `
+            <div class="character-thumb-empty" data-char-img-change="${k}">
+              <div class="character-thumb-icon">📷</div>
+              <div>Add photo</div>
+            </div>
+          `}
+        </div>
+        <div class="character-body">
+          <h3 class="character-name">${escapeHtml(c.role)}</h3>
+          <div class="character-actor">${actorLine}</div>
+          <div class="character-section">
+            <div class="character-section-lbl">About them</div>
+            <textarea class="character-desc" data-char-desc="${k}" placeholder="Who is this character? Their personality, what they want, their relationships...">${escapeHtml(desc)}</textarea>
+          </div>
+          <div class="character-section">
+            <div class="character-section-lbl">Costume</div>
+            <ul class="character-costume-list">
+              ${c.items.map(i => `<li>${escapeHtml(i)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function render() {
+  captureScriptDraft();
+  renderStats();
+  const list = document.getElementById('list');
+  if (view === 'characters') {
+    document.getElementById('filter-row').style.display = 'none';
+    list.innerHTML = renderCharacters();
+  } else {
+    document.getElementById('filter-row').style.display = 'flex';
+    let scenes = SCENES;
+    if (actFilter !== 'all') scenes = scenes.filter(s => s.a == actFilter);
+    if (castFilter) scenes = scenes.filter(s => sceneHasActor(s, castFilter));
+    if (todoOnly) scenes = scenes.filter(s => state[s.id].status !== 'done');
+
+    let html = '';
+    if (castFilter) html += renderCastBanner();
+    html += scenes.length
+      ? scenes.map(renderSceneCard).join('')
+      : '<div class="empty">No scenes match these filters.</div>';
+    list.innerHTML = html;
+  }
+  if (editingScriptId !== null) {
+    const ta = document.querySelector(`[data-script-textarea="${editingScriptId}"]`);
+    if (ta) {
+      autoResizeTextarea(ta);
+      ta.focus();
+      ta.setSelectionRange(ta.value.length, ta.value.length);
+    }
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-toggle]');
+  if (t) { openId = openId === t.dataset.toggle ? null : t.dataset.toggle; render(); return; }
+
+  const v = e.target.closest('[data-view]');
+  if (v) {
+    view = v.dataset.view;
+    document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    render();
+    return;
+  }
+
+  const a = e.target.closest('[data-act]');
+  if (a) {
+    actFilter = a.dataset.act;
+    document.querySelectorAll('[data-act]').forEach(b => b.classList.toggle('active', b.dataset.act === actFilter));
+    render();
+    return;
+  }
+
+  if (e.target.id === 'todo-toggle') {
+    todoOnly = !todoOnly;
+    e.target.classList.toggle('active', todoOnly);
+    render();
+    return;
+  }
+
+  const ss = e.target.closest('[data-status-set]');
+  if (ss) {
+    e.stopPropagation();
+    const [id, s] = ss.dataset.statusSet.split(':');
+    state[id].status = s;
+    saveState();
+    render();
+    const card = document.querySelector(`[data-card="${id}"]`);
+    if (card) { card.classList.add('pop'); setTimeout(() => card.classList.remove('pop'), 300); }
+    return;
+  }
+
+  const tb = e.target.closest('[data-takes]');
+  if (tb) {
+    e.stopPropagation();
+    const [id, delta] = tb.dataset.takes.split(':');
+    state[id].takes = Math.max(0, state[id].takes + parseInt(delta));
+    saveState();
+    render();
+    return;
+  }
+
+  const editBtn = e.target.closest('[data-script-edit-toggle]');
+  if (editBtn) {
+    e.stopPropagation();
+    const id = editBtn.dataset.scriptEditToggle;
+    editingScriptId = id;
+    state[id].scriptDraft = state[id].scriptEdit ?? SCRIPT[id] ?? '';
+    if (openId !== id) openId = id;
+    render();
+    return;
+  }
+
+  const saveBtn = e.target.closest('[data-script-save]');
+  if (saveBtn) {
+    e.stopPropagation();
+    captureScriptDraft();
+    const id = saveBtn.dataset.scriptSave;
+    state[id].scriptEdit = state[id].scriptDraft ?? '';
+    delete state[id].scriptDraft;
+    editingScriptId = null;
+    saveState();
+    render();
+    return;
+  }
+
+  const cancelBtn = e.target.closest('[data-script-cancel]');
+  if (cancelBtn) {
+    e.stopPropagation();
+    const id = cancelBtn.dataset.scriptCancel;
+    delete state[id].scriptDraft;
+    editingScriptId = null;
+    render();
+    return;
+  }
+
+  const resetBtn = e.target.closest('[data-script-reset]');
+  if (resetBtn) {
+    e.stopPropagation();
+    const id = resetBtn.dataset.scriptReset;
+    if (confirm('Reset to the original script? Your edits will be lost.')) {
+      delete state[id].scriptEdit;
+      delete state[id].scriptDraft;
+      saveState();
+      render();
+    }
+    return;
+  }
+
+  if (e.target.closest('[data-cast-clear]')) {
+    castFilter = '';
+    updateUrl();
+    populateCastSelect();
+    render();
+    return;
+  }
+
+  const charImgChange = e.target.closest('[data-char-img-change]');
+  if (charImgChange) {
+    pendingCharImageId = charImgChange.dataset.charImgChange;
+    document.getElementById('char-img-input').click();
+    return;
+  }
+
+  const charImgRemove = e.target.closest('[data-char-img-remove]');
+  if (charImgRemove) {
+    const k = charImgRemove.dataset.charImgRemove;
+    if (characterData[k]) {
+      delete characterData[k].thumbnail;
+      if (Object.keys(characterData[k]).length === 0) delete characterData[k];
+      saveCharacterData();
+      render();
+    }
+    return;
+  }
+});
+
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'char-img-input') {
+    const file = e.target.files[0];
+    if (file && pendingCharImageId) {
+      processCharacterImage(file, pendingCharImageId);
+    }
+    e.target.value = '';
+    pendingCharImageId = null;
+    return;
+  }
+  if (e.target.id === 'cast-filter') {
+    castFilter = e.target.value;
+    e.target.classList.toggle('is-active', !!castFilter);
+    updateUrl();
+    render();
+    return;
+  }
+  const c = e.target.closest('[data-check]');
+  if (c) {
+    const [id, k] = c.dataset.check.split(':');
+    state[id].checks[k] = c.checked;
+    saveState();
+    render();
+  }
+});
+
+let saveTimer = null;
+let charSaveTimer = null;
+document.addEventListener('input', (e) => {
+  const n = e.target.closest('[data-notes]');
+  if (n) {
+    const id = n.dataset.notes;
+    state[id].prodNotes = n.value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveState, 400);
+    return;
+  }
+  const ta = e.target.closest('[data-script-textarea]');
+  if (ta) {
+    const id = ta.dataset.scriptTextarea;
+    state[id].scriptDraft = ta.value;
+    autoResizeTextarea(ta);
+    return;
+  }
+  const cd = e.target.closest('[data-char-desc]');
+  if (cd) {
+    const k = cd.dataset.charDesc;
+    if (!characterData[k]) characterData[k] = {};
+    characterData[k].description = cd.value;
+    clearTimeout(charSaveTimer);
+    charSaveTimer = setTimeout(saveCharacterData, 400);
+  }
+});
+
+loadFromUrl();
+loadState();
+loadCharacterData();
+populateCastSelect();
+render();
+</script>
+</body>
+</html>
