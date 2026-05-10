@@ -921,9 +921,28 @@
     100% { transform: scale(1); }
   }
   .pop { animation: pop 0.3s ease; }
+
+  /* SYNC INDICATOR */
+  #sync-dot {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-mute);
+    opacity: 0.5;
+    z-index: 9999;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  #sync-dot.flash-ok  { background: #4CAF50; opacity: 1; }
+  #sync-dot.flash-err { background: #E53935; opacity: 1; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
+<div id="sync-dot"></div>
 <input type="file" id="char-img-input" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none">
 <header class="hero">
   <div class="hero-inner">
@@ -954,6 +973,16 @@
 </main>
 
 <script>
+// ── Supabase Cloud Sync ──
+const SUPABASE_URL = 'https://ptvocbhgbiatutedhekb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0dm9jYmhnYmlhdHV0ZWRoZWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzOTE4MzAsImV4cCI6MjA5Mzk2NzgzMH0.gW_lTHzuC4MfmR02L8MfY1eDqJ3V8jRQ8RyyRJQu2lI';
+let sb = null;
+try {
+  if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+} catch(e) { sb = null; }
+
 const SCENES = [
   {id:'p',n:'Pro',t:'The two spies',a:1,c:'Narrator + silhouettes (Chris, Lily)',w:"Narrator tells the story of two young spies who didn't get along, fell in love, married, and had twin girls — then never returned from one urgent mission. The girls were separated and given lockets with their parents' wedding rings inside.",p:'Lockets with wedding rings, possible silhouette setup',s:'Silhouette stage / abstract',notes:''},
   {id:'s1',n:'1',t:"Introducing Lucy's World",a:1,c:'Lucy, Grandma Greta',w:"Lucy at the bakery, bored, fingering her locket and wondering how to open it. Greta comes out and offers to take her to the library.",p:'Locket, bakery closed sign',s:"Porch of Greta's bakery (Colorado)",notes:'Introduce Locket'},
@@ -1682,6 +1711,7 @@ function loadState() {
 function saveState() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
   catch(e) { console.error('save failed', e); }
+  saveStateCloud();
 }
 
 function escapeHtml(str) {
@@ -1864,6 +1894,78 @@ function saveCharacterData() {
   } catch(e) {
     alert('Could not save — browser storage may be full. Try removing some character photos.');
   }
+  saveCharacterDataCloud();
+}
+
+// ── Cloud sync helpers ──
+function flashSync(ok) {
+  const dot = document.getElementById('sync-dot');
+  if (!dot) return;
+  dot.classList.remove('flash-ok', 'flash-err');
+  void dot.offsetWidth; // reflow to restart animation
+  dot.classList.add(ok ? 'flash-ok' : 'flash-err');
+  setTimeout(() => dot.classList.remove('flash-ok', 'flash-err'), 1200);
+}
+
+async function saveStateToCloud() {
+  if (!sb) return;
+  try {
+    const { error } = await sb.from('app_data').upsert(
+      { key: 'state', data: state, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    flashSync(!error);
+  } catch(e) { flashSync(false); }
+}
+
+async function saveCharacterDataToCloud() {
+  if (!sb) return;
+  try {
+    const { error } = await sb.from('app_data').upsert(
+      { key: 'characters', data: characterData, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    flashSync(!error);
+  } catch(e) { flashSync(false); }
+}
+
+let cloudStateTimer = null;
+function saveStateCloud() {
+  clearTimeout(cloudStateTimer);
+  cloudStateTimer = setTimeout(saveStateToCloud, 1000);
+}
+
+let cloudCharTimer = null;
+function saveCharacterDataCloud() {
+  clearTimeout(cloudCharTimer);
+  cloudCharTimer = setTimeout(saveCharacterDataToCloud, 1000);
+}
+
+async function loadStateFromCloud() {
+  if (!sb) return;
+  try {
+    const { data, error } = await sb.from('app_data').select('data').eq('key', 'state').single();
+    if (!error && data && data.data && Object.keys(data.data).length > 0) {
+      state = data.data;
+      for (const sc of SCENES) {
+        if (!state[sc.id]) {
+          state[sc.id] = { status:'not_started', checks:{}, takes:0, prodNotes:'' };
+        }
+      }
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    }
+  } catch(e) { /* offline — use localStorage */ }
+}
+
+async function loadCharacterDataFromCloud() {
+  if (!sb) return;
+  try {
+    const { data, error } = await sb.from('app_data').select('data').eq('key', 'characters').single();
+    if (!error && data && data.data && Object.keys(data.data).length > 0) {
+      characterData = data.data;
+      localStorage.setItem(CHAR_STORE_KEY, JSON.stringify(characterData));
+    }
+  } catch(e) { /* offline — use localStorage */ }
 }
 
 function getCharData(role) {
@@ -2163,6 +2265,13 @@ loadState();
 loadCharacterData();
 populateCastSelect();
 render();
+
+// After instant first paint from localStorage, fetch cloud data and re-render
+(async () => {
+  if (!sb) return;
+  await Promise.all([loadStateFromCloud(), loadCharacterDataFromCloud()]);
+  render();
+})();
 </script>
 </body>
 </html>
