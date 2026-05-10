@@ -922,6 +922,74 @@
   }
   .pop { animation: pop 0.3s ease; }
 
+  /* SCRIPT VIEW */
+  .script-view {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 8px;
+  }
+  .script-act-divider {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--crimson);
+    text-align: center;
+    margin: 48px 0 24px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--crimson);
+  }
+  .script-view .script-act-divider:first-child {
+    margin-top: 8px;
+  }
+  .script-scene-block {
+    background: var(--paper);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(27, 79, 124, 0.08);
+  }
+  .script-scene-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--cream);
+  }
+  .script-scene-num {
+    font-family: 'League Gothic', sans-serif;
+    font-size: 32px;
+    color: var(--sky-deep);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .script-scene-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .script-scene-body {
+    font-size: 17px;
+    line-height: 1.85;
+    color: #2a2a2a;
+  }
+  .script-scene-body strong {
+    font-size: 18px;
+    color: var(--crimson-deep);
+    font-weight: 700;
+  }
+  .script-scene-body em {
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  @media print {
+    .script-scene-block { box-shadow: none; break-inside: avoid; }
+    .script-act-divider { break-before: page; }
+  }
+
   /* SYNC INDICATOR */
   #sync-dot {
     position: fixed;
@@ -958,6 +1026,7 @@
   <div class="tabs">
     <button class="tab active" data-view="scenes">Scenes</button>
     <button class="tab" data-view="characters">Characters</button>
+    <button class="tab" data-view="script">Script</button>
   </div>
 
   <div class="filter-row" id="filter-row">
@@ -2051,11 +2120,39 @@ function renderCharacters() {
   }).join('');
 }
 
+function renderFullScript() {
+  const actNames = { 1: 'Act I', 2: 'Act II', 3: 'Act III' };
+  let html = '<div class="script-view">';
+  let currentAct = null;
+  for (const sc of SCENES) {
+    const scriptText = getScriptText(sc.id);
+    if (!scriptText) continue;
+    if (sc.a !== currentAct) {
+      currentAct = sc.a;
+      html += `<div class="script-act-divider">${actNames[currentAct] || 'Act ' + currentAct}</div>`;
+    }
+    html += `
+      <div class="script-scene-block">
+        <div class="script-scene-header">
+          <div class="script-scene-num">${sc.n}</div>
+          <div class="script-scene-title">${escapeHtml(sc.t)}</div>
+        </div>
+        <div class="script-scene-body">${formatScript(scriptText)}</div>
+      </div>
+    `;
+  }
+  html += '</div>';
+  return html;
+}
+
 function render() {
   captureScriptDraft();
   renderStats();
   const list = document.getElementById('list');
-  if (view === 'characters') {
+  if (view === 'script') {
+    document.getElementById('filter-row').style.display = 'none';
+    list.innerHTML = renderFullScript();
+  } else if (view === 'characters') {
     document.getElementById('filter-row').style.display = 'none';
     list.innerHTML = renderCharacters();
   } else {
